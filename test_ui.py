@@ -3,9 +3,10 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver import ActionChains
 from config import *
-import time
 import random
+import time
  
 
 
@@ -42,7 +43,7 @@ def test_login(driver):
     check_authorization = wait.until(
         EC.visibility_of_element_located((By.XPATH, "//h3[contains(text(),'Личные данные')]"))
     )
-    check_authorization.is_displayed()
+    assert check_authorization.text == "Личные данные", "Текст не соответствует"
 
 def test_login_with_invalid_password(driver):
     wait = WebDriverWait(driver, 10)
@@ -73,6 +74,54 @@ def test_login_with_invalid_password(driver):
     )
     assert error_password_message.text == "Неверный пароль", "Текст не соответствует"
 
+def test_logout(driver):
+    action = ActionChains(driver)
+    wait = WebDriverWait(driver, 10)
+    driver.get(BASE_URL)
+
+    login_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//span[text()='Войти']"))
+    )
+    login_button.click()
+
+    fill_email = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//input[@data-test='email-login-field']"))
+    )
+    fill_email.send_keys(email)
+
+    fill_password = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//input[@data-test='password-field']"))
+    )
+    fill_password.send_keys(password)
+
+    click_enter_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Войти']]"))
+    )
+    click_enter_button.click()
+
+    open_profile = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//a[@data-test='login-link']"))
+    )
+    open_profile.click()
+    driver.find_element(By.TAG_NAME, "body").click()
+
+    profile_trigger = wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-test='login-link']"))
+    )
+    action.move_to_element(profile_trigger).perform()
+
+    logout_button = wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-test='logout-link']"))
+    )
+    logout_button.click()
+
+    login_prompt = wait.until(
+        EC.visibility_of_element_located((By.XPATH, "//p[text()='Войдите, чтобы продолжить']"))
+    )
+    assert login_prompt.is_displayed()
+
+
+
 
 
 def test_search_product_by_keyword(driver):
@@ -82,7 +131,7 @@ def test_search_product_by_keyword(driver):
     search_input = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
     )
-    keyword = ("перфоратор")
+    keyword = "перфоратор"
     search_input.send_keys(keyword)
 
     search_button = wait.until(
@@ -103,7 +152,7 @@ def test_open_product_card(driver):
     search_input = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
     )
-    keyword = ("краска")
+    keyword = "краска"
     search_input.send_keys(keyword)
     search_input.send_keys(Keys.ENTER)
 
@@ -130,7 +179,7 @@ def test_add_product_to_cart(driver):
     search_input = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
     )
-    keyword = ("розетка")
+    keyword = "розетка"
     search_input.send_keys(keyword)
     search_input.send_keys(Keys.ENTER)
 
@@ -177,9 +226,105 @@ def test_add_product_to_cart(driver):
         EC.visibility_of_element_located((By.CSS_SELECTOR, "span[data-test='product-title']"))
     )
     product_title_in_cart = check_product_title_in_cart.text
-    assert product_name.lower() in product_title_in_cart.lower()
+    assert product_name.lower() in product_title_in_cart.lower(), f"Ошибка, в корзине ожидался товар \"{product_name}\""
 
 
+def test_add_product_to_favorites(driver):
+    wait = WebDriverWait(driver, 10)
+    driver.get(BASE_URL)
+
+    search_input = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
+    )
+    keyword = "ламинат"
+    search_input.send_keys(keyword)
+    search_input.send_keys(Keys.ENTER)
+
+    cards = wait.until(
+        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "span[data-test='product-title']"))
+    )
+    assert len(cards) > 0
+
+    select_product = random.choice(cards)
+    product_name = select_product.text
+    print(product_name)
+    select_product.click()
+
+    product_title_in_card = wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "h1[data-test='product-title']"))
+    )
+    product_title_text = product_title_in_card.text
+    assert product_name.lower() in product_title_text.lower()
+
+    add_to_favorite_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//button[@data-test='product-add-to-favorite-button']"))
+    )
+    add_to_favorite_button.click()
+
+    check_adding_to_favorites = wait.until(
+        EC.visibility_of_element_located((By.XPATH, "//p[contains(text(), 'Добавлено в избранное')]"))
+    )
+    assert check_adding_to_favorites.is_displayed()
+    assert check_adding_to_favorites.text == "Добавлено в избранное"
+
+
+def test_open_favorites_page_and_verify_item(driver):
+    wait = WebDriverWait(driver, 10)
+    driver.get(BASE_URL)
+
+    search_input = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
+    )
+    keyword = "водоснабжение"
+    search_input.send_keys(keyword)
+    search_input.send_keys(Keys.ENTER)
+
+    cards = wait.until(
+        EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "span[data-test='product-title']"))
+    )
+    assert len(cards) > 0
+
+    select_product = random.choice(cards)
+    product_name = select_product.text
+    print(product_name)
+    select_product.click()
+
+    add_to_favorite_button = wait.until(
+        EC.visibility_of_element_located((By.XPATH, "//button[@data-test='product-add-to-favorite-button' and .='В избранное']"))
+    )
+    add_to_favorite_button.click()
+
+    open_favorite_page = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//a[@data-test='favorite-icon']"))
+    )
+    open_favorite_page.click()
+
+    product_title_in_favorite = wait.until(
+        EC.visibility_of_element_located((By.XPATH, "//span[@data-test='product-title']"))
+    )
+    product_title_text = product_title_in_favorite.text
+    assert product_name.lower() == product_title_text.lower(), f"Ошибка, в корзине ожидался товар \"{product_name}\""
+
+
+def test_footer_contains_company_info(driver):
+    wait = WebDriverWait(driver, 10)
+    driver.get(BASE_URL)
+
+    expected = {"О компании", "Покупателям", "Сервисы", "Лояльность", "Контакты", "Обратная связь"}
+
+    wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@class='footer-grid footer-links-grid']")))
+
+    check_footer = driver.find_elements(By.CSS_SELECTOR, "div.footer-grid.footer-links-grid span.footer-title")
+
+    actual_footer_data = {el.text for el in check_footer}
+
+    assert expected == actual_footer_data
+
+
+
+
+
+    # time.sleep(7)
 
 
 
