@@ -3,16 +3,16 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from config import *
 import time
 import random
-
-
+ 
 
 
 
 def test_login(driver):
     wait = WebDriverWait(driver, 10)
-    driver.get("https://petrovich.ru/")
+    driver.get(BASE_URL)
 
     login_button = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//span[text()='Войти']"))
@@ -22,12 +22,12 @@ def test_login(driver):
     fill_email = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@data-test='email-login-field']"))
     )
-    fill_email.send_keys("test-filatov@mail.ru")
+    fill_email.send_keys(email)
 
     fill_password = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@data-test='password-field']"))
     )
-    fill_password.send_keys("xuUVRl")
+    fill_password.send_keys(password)
 
     click_enter_button = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Войти']]"))
@@ -44,9 +44,40 @@ def test_login(driver):
     )
     check_authorization.is_displayed()
 
+def test_login_with_invalid_password(driver):
+    wait = WebDriverWait(driver, 10)
+    driver.get(BASE_URL)
+
+    login_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//span[text()='Войти']"))
+    )
+    login_button.click()
+
+    fill_email = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//input[@data-test='email-login-field']"))
+    )
+    fill_email.send_keys(email)
+
+    fill_password = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//input[@data-test='password-field']"))
+    )
+    fill_password.send_keys(invalid_password)
+
+    click_enter_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Войти']]"))
+    )
+    click_enter_button.click()
+
+    error_password_message = wait.until(
+        EC.visibility_of_element_located((By.XPATH, "//p[@data-test='error-msg' and contains(text(), 'Неверный пароль')]"))
+    )
+    assert error_password_message.text == "Неверный пароль", "Текст не соответствует"
+
+
+
 def test_search_product_by_keyword(driver):
     wait = WebDriverWait(driver, 10)
-    driver.get("https://petrovich.ru/")
+    driver.get(BASE_URL)
 
     search_input = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
@@ -67,7 +98,7 @@ def test_search_product_by_keyword(driver):
 
 def test_open_product_card(driver):
     wait = WebDriverWait(driver, 10)
-    driver.get("https://petrovich.ru/")
+    driver.get(BASE_URL)
 
     search_input = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
@@ -94,7 +125,7 @@ def test_open_product_card(driver):
 
 def test_add_product_to_cart(driver):
     wait = WebDriverWait(driver, 10)
-    driver.get("https://petrovich.ru/")
+    driver.get(BASE_URL)
 
     search_input = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//input[@class='header-search-input middle-header-search-input']"))
