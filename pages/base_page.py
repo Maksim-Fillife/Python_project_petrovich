@@ -1,0 +1,65 @@
+from selenium.common import StaleElementReferenceException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver import ActionChains
+
+
+
+
+class BasePage:
+    def __init__(self, driver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+        self.action = ActionChains(self.driver)
+
+    def click(self, locator):
+        element = self.wait.until(EC.presence_of_element_located(locator))
+        element.click()
+
+    def click_in_cart(self, locator, max_retries=3):
+        #Клик по элементу с защитой от StaleElement
+        for i in range(max_retries):
+            try:
+                element = self.wait.until(EC.element_to_be_clickable(locator))
+                element.click()
+                break
+            except StaleElementReferenceException:
+                if i == max_retries - 1:
+                    raise
+
+    def find_element(self, locator):
+        return self.wait.until(EC.presence_of_element_located(locator))
+
+    def find_elements(self, locator):
+        #Возвращает список элементов (для карточек товаров)
+        self.wait.until(EC.visibility_of_element_located(locator))
+        return self.driver.find_elements(*locator)
+
+    def hover(self, locator):
+        #Наведение курсора на элемент
+        element = self.wait.until(EC.visibility_of_element_located(locator))
+        self.action.move_to_element(element).perform()
+
+    def type_text(self, locator, text):
+        #Ввод текста в поле
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        element.clear()
+        element.send_keys(text)
+
+    def get_text(self, locator):
+        #Возвращает текст видимого элемента
+        element = self.wait.until(EC.visibility_of_element_located(locator))
+        return element.text
+
+    def wait_for_text_in_element(self, locator):
+        #Ждёт, пока в элементе не появится нужный текст
+        return self.wait.until(EC.text_to_be_present_in_element(locator))
+
+    def is_element_visible(self, locator):
+        #Ждет, отображение элемента
+        try:
+            self.wait.until(EC.visibility_of_element_located(locator))
+            return True
+        except:
+            return False
+
