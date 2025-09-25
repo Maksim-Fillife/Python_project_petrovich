@@ -14,7 +14,7 @@ class LoginPageLocators:
     PASSWORD_INPUT = (By.XPATH, "//input[@data-test='password-field']")
     ENTER_BUTTON = (By.XPATH, "//button[.//span[text()='Войти']]")
     PROFILE_BUTTON = (By.XPATH, "//a[@data-test='login-link']")
-    PERSONAL_DATA_HEADER = (By.XPATH, "//h3[contains(text(),'Личные данные')]")
+    PROFILE_POPUP = (By.CSS_SELECTOR, ".profile-popup-block-section")
     LOGOUT_BUTTON = (By.CSS_SELECTOR, "[data-test='logout-link']")
     ERROR_PASSWORD_MESSAGE = (By.XPATH, "//p[@data-test='error-msg' and contains(text(), 'Неверный пароль')]")
     LOGIN_PROMPT = (By.XPATH, "//p[text()='Войдите, чтобы продолжить']")
