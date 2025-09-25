@@ -1,6 +1,9 @@
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from pages.product_page import ProductPage
+from pages.login_page import LoginPage
+from pages.main_page import MainPage
 from selenium import webdriver
 import pytest
 
@@ -18,3 +21,15 @@ def driver():
     driver = webdriver.Chrome(service=service)
     driver.maximize_window()
     yield driver
+
+@pytest.fixture
+def main_page(driver):
+    return MainPage(driver)
+
+@pytest.fixture
+def login_page(driver):
+    return LoginPage(driver)
+
+@pytest.fixture
+def product_page(driver):
+    return ProductPage(driver)
