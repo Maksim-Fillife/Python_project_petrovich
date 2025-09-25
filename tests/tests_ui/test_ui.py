@@ -4,11 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
-from config import *
+from data.config import *
 import random
-import time
- 
-
 
 
 def test_login(driver):
@@ -383,7 +380,7 @@ def test_open_favorites_page_and_verify_item(driver):
     open_favorite_page.click()
 
     product_title_in_favorite = wait.until(
-        EC.visibility_of_element_located((By.XPATH, "//span[@data-test='product-title']"))
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "span[data-test='product-title']"))
     )
     product_title_text = product_title_in_favorite.text
     assert product_name.lower() == product_title_text.lower(), f"Ошибка, в корзине ожидался товар \"{product_name}\""
@@ -395,7 +392,7 @@ def test_footer_contains_company_info(driver):
 
     expected = {"О компании", "Покупателям", "Сервисы", "Лояльность", "Контакты", "Обратная связь"}
 
-    wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@class='footer-grid footer-links-grid']")))
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.footer-grid.footer-links-grid span.footer-title")))
 
     check_footer = driver.find_elements(By.CSS_SELECTOR, "div.footer-grid.footer-links-grid span.footer-title")
 
