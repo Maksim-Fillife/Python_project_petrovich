@@ -2,7 +2,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
-password = os.getenv("PASSWORD")
-email = os.getenv("EMAIL")
-invalid_password = "<PASSWORD>"
+PASSWORD = os.getenv("PASSWORD")
+EMAIL = os.getenv("EMAIL")
+INVALID_PASSWORD = "<PASSWORD>"
 BASE_URL = "https://petrovich.ru/"
