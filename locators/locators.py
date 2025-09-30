@@ -20,8 +20,10 @@ class LoginPageLocators:
     LOGIN_PROMPT = (By.XPATH, "//p[text()='Войдите, чтобы продолжить']")
 
 class DeliveryPageLocators:
-    DELIVERY_PAGE_BUTTON =(By.CSS_SELECTOR, "a[href='/services/delivery/']")
     DELIVERY_PAGE_TITLE = (By.CSS_SELECTOR, "h2[data-test='delivery-page-title']")
+
+class ServicesPageLocators:
+    DELIVERY_PAGE_BUTTON =(By.CSS_SELECTOR, "a[href='/services/delivery/']")
 
 class CartPageLocators:
     CART_QUANTITY = (By.XPATH, "//span[@class='cart-mini-header-cart']/following-sibling::span")
