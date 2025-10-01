@@ -1,7 +1,5 @@
 import time
 
-
-
 def test_login_success(main_page, login_page):
     main_page.open()
     main_page.open_login_modal()
@@ -38,8 +36,8 @@ def test_search_product_by_keyword(main_page, product_page):
 def test_open_product_card(main_page, product_page):
     main_page.open()
     main_page.search_product('краска')
-    main_page.get_title_cards()
     main_page.select_random_product()
+    main_page.get_title_cards()
     product_name = main_page.select_random_product()
     product_title = product_page.get_product_title()
     assert product_name.lower() in product_title.lower(), \
@@ -68,8 +66,6 @@ def test_delete_product_from_cart(main_page, product_page, cart_page):
     main_page.open_cart()
     cart_page.delete_product_from_cart()
     cart_page.is_cart_empty()
-
-    time.sleep(5)
 
 def test_open_delivery_page(main_page,services_page, delivery_page):
     main_page.open()

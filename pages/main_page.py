@@ -43,7 +43,7 @@ class MainPage(BasePage):
             assert len(cards) > 0, "Товары не найдены"
             select_product = random.choice(cards)
             product_name = select_product.text
-            select_product.click()
+            self.click(select_product)
             return product_name
 
     def open_mini_cart(self):
