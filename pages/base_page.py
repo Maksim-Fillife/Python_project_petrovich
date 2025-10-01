@@ -1,4 +1,4 @@
-from selenium.common import StaleElementReferenceException
+from selenium.common import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import ActionChains
@@ -13,22 +13,11 @@ class BasePage:
         self.action = ActionChains(self.driver)
 
     def click(self, locator):
-        element = self.wait.until(EC.presence_of_element_located(locator))
+        element = self.wait.until(EC.element_to_be_clickable(locator))
         element.click()
 
-    def click_in_cart(self, locator, max_retries=3):
-        #Клик по элементу с защитой от StaleElement
-        for i in range(max_retries):
-            try:
-                element = self.wait.until(EC.element_to_be_clickable(locator))
-                element.click()
-                break
-            except StaleElementReferenceException:
-                if i == max_retries - 1:
-                    raise
-
     def find_element(self, locator):
-        return self.wait.until(EC.presence_of_element_located(locator))
+        return self.wait.until(EC.visibility_of_element_located(locator))
 
     def find_elements(self, locator):
         #Возвращает список элементов (для карточек товаров)
@@ -49,17 +38,17 @@ class BasePage:
     def get_text(self, locator):
         #Возвращает текст видимого элемента
         element = self.wait.until(EC.visibility_of_element_located(locator))
-        return element.text
+        return element.text.strip()
 
-    def wait_for_text_in_element(self, locator):
+    def wait_for_text_in_element(self, locator, expected_text):
         #Ждёт, пока в элементе не появится нужный текст
-        return self.wait.until(EC.text_to_be_present_in_element(locator))
+        return self.wait.until(EC.text_to_be_present_in_element(locator, expected_text))
 
     def is_element_visible(self, locator):
         #Ждет, отображение элемента
         try:
             self.wait.until(EC.visibility_of_element_located(locator))
             return True
-        except:
+        except TimeoutException:
             return False
 

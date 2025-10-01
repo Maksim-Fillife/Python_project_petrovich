@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 
 class MainPageLocators:
     HEADER_SEARCH_INPUT = (By.CSS_SELECTOR, "input.header-search-input")
+    SEARCH_RESULT = (By.XPATH, "//h1[contains(@class, 'pt-ta-left') and contains(@class, 'pt-wrap')]")
     SEARCH_BUTTON = (By.XPATH, "//button[contains(text(),'Найти')]")
     LOGIN_BUTTON = (By.XPATH, "//span[text()='Войти']")
     SERVICES_ICON = (By.CSS_SELECTOR, "a[data-test='services-link']")
@@ -20,10 +21,13 @@ class LoginPageLocators:
     LOGIN_PROMPT = (By.XPATH, "//p[text()='Войдите, чтобы продолжить']")
 
 class DeliveryPageLocators:
-    DELIVERY_PAGE_BUTTON =(By.CSS_SELECTOR, "a[href='/services/delivery/']")
     DELIVERY_PAGE_TITLE = (By.CSS_SELECTOR, "h2[data-test='delivery-page-title']")
 
+class ServicesPageLocators:
+    DELIVERY_PAGE_BUTTON =(By.CSS_SELECTOR, "a[href='/services/delivery/']")
+
 class CartPageLocators:
+    EMPTY_CART_MESSAGE = (By.XPATH, "//span[contains(text(), 'Корзина пуста')]")
     CART_QUANTITY = (By.XPATH, "//span[@class='cart-mini-header-cart']/following-sibling::span")
     DELETE_FROM_CART_BUTTON = (By.CSS_SELECTOR, "[data-test='data-test-deleteCallback']")
 
