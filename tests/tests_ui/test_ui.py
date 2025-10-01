@@ -1,4 +1,4 @@
-import time
+
 
 def test_login_success(main_page, login_page):
     main_page.open()
