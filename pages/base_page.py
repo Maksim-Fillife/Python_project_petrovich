@@ -1,4 +1,4 @@
-from selenium.common import StaleElementReferenceException, TimeoutException
+from selenium.common import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import ActionChains
@@ -13,19 +13,8 @@ class BasePage:
         self.action = ActionChains(self.driver)
 
     def click(self, locator):
-        element = self.wait.until(EC.presence_of_element_located(locator))
+        element = self.wait.until(EC.element_to_be_clickable(locator))
         element.click()
-
-    def click_add_in_cart(self, locator, max_retries=3):
-        #Клик по элементу с защитой от StaleElement
-        for i in range(max_retries):
-            try:
-                element = self.wait.until(EC.element_to_be_clickable(locator))
-                element.click()
-                break
-            except StaleElementReferenceException:
-                if i == max_retries - 1:
-                    raise
 
     def find_element(self, locator):
         return self.wait.until(EC.visibility_of_element_located(locator))
