@@ -3,3 +3,7 @@ __pycache__
 .pytest_cache
 .idea
 .env
+allure-report
+allure-results
+decor.py
+old_test
