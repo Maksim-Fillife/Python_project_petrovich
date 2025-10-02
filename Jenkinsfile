@@ -28,7 +28,15 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh '. venv/bin/activate && python -m pytest --alluredir=allure-results'
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'petrovich_cred',
+                        usernameVariable: 'EMAIL',
+                        passwordVariable: 'PASSWORD'
+                    )
+                ]) {
+                    sh '. venv/bin/activate && python -m pytest --alluredir=allure-results'
+                }
             }
         }
     }
@@ -38,7 +46,8 @@ pipeline {
             allure(
                 includeProperties: false,
                 jdk: '',
-                results: [[path: 'allure-results']]
+                results: [[path: 'allure-results']],
+                report: 'allure'
             )
         }
     }
