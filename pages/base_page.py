@@ -21,8 +21,7 @@ class BasePage:
 
     def find_elements(self, locator):
         #Возвращает список элементов (для карточек товаров)
-        self.wait.until(EC.visibility_of_element_located(locator))
-        return self.driver.find_elements(*locator)
+        return self.wait.until(EC.presence_of_all_elements_located(locator))
 
     def hover(self, locator):
         #Наведение курсора на элемент
