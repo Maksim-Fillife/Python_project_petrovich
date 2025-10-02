@@ -1,3 +1,4 @@
+from selenium.common import exceptions
 from locators.locators import ProductCardLocators
 from locators.locators import MainPageLocators
 from pages.base_page import BasePage
@@ -13,9 +14,16 @@ class MainPage(BasePage):
         with allure.step('Open main page https://petrovich.ru/'):
             self.driver.get(BASE_URL)
 
-    def open_login_modal(self):
+    def open_login_modal(self, max_retries=3):
         with allure.step('Open authorization form'):
-            self.click(MainPageLocators.LOGIN_BUTTON)
+            for i in range(max_retries):
+                try:
+                    self.click(MainPageLocators.LOGIN_BUTTON)
+                    break
+                except exceptions.TimeoutException:
+                    if i == max_retries - 1:
+                        raise
+
 
     def open_services(self):
         with allure.step('Оpen the services section'):
