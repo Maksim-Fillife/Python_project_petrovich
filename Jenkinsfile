@@ -11,7 +11,7 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 sh 'python3 -m venv venv'
-                sh 'source venv/bin/activate && pip install -r requirements.txt'
+                sh '. venv/bin/activate && pip install -r requirements.txt'
             }
         }
 
@@ -28,7 +28,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'source venv/bin/activate && python -m pytest --alluredir=allure-results'
+                sh '. venv/bin/activate && python -m pytest --alluredir=allure-results'
             }
         }
     }
