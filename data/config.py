@@ -6,3 +6,4 @@ PASSWORD = os.getenv("PASSWORD")
 EMAIL = os.getenv("EMAIL")
 INVALID_PASSWORD = "<PASSWORD>"
 BASE_URL = "https://petrovich.ru/"
+COOKIES = os.getenv("COOKIES")
