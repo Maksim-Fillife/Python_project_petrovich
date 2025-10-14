@@ -25,10 +25,10 @@ class ProductPage(BasePage):
                     if i == max_retries - 1:
                         raise
 
-    def get_add_to_cart_button_tex(self):
+    def get_add_to_cart_button_text(self):
         with allure.step('Проверить текст кнопки'):
-            return self.wait_for_text_in_element(ProductCardLocators.ADD_TO_CART_BUTTON, 'В корзине'), \
-                "Текст кнопки не изменился на 'в корзине' после добавления"
+            self.wait_for_text_in_element(ProductCardLocators.ADD_TO_CART_BUTTON, 'В корзине')
+            return self.get_text(ProductCardLocators.ADD_TO_CART_BUTTON)
 
     def get_favorite_added_message(self):
         with allure.step('Проверка добавления товара в избранное'):
