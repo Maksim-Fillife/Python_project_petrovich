@@ -10,7 +10,7 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
-        self.action = ActionChains(self.driver)
+        self.action = ActionChains(driver)
 
     def click(self, locator):
         element = self.wait.until(EC.element_to_be_clickable(locator))

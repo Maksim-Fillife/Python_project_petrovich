@@ -6,5 +6,5 @@ import allure
 class ServicesPage(BasePage):
 
     def open_delivery_page(self):
-        with allure.step('open delivery page'):
+        with allure.step('Открыть страницу доставки'):
             self.click(ServicesPageLocators.DELIVERY_PAGE_BUTTON)

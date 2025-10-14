@@ -15,7 +15,7 @@ class MainPage(BasePage):
             self.driver.get(BASE_URL)
 
     def open_login_modal(self, max_retries=3):
-        with allure.step('Open authorization form'):
+        with allure.step('Открыть форму авторизаации'):
             for i in range(max_retries):
                 try:
                     self.click(MainPageLocators.LOGIN_BUTTON)
@@ -26,27 +26,27 @@ class MainPage(BasePage):
 
 
     def open_services(self):
-        with allure.step('Оpen the services section'):
+        with allure.step('Открыть раздел "Сервисы'):
             self.click(MainPageLocators.SERVICES_ICON)
 
     def search_product(self, keyword):
-        with allure.step('Enter text and click find'):
+        with allure.step(f'Ввести текст {keyword} и нажать Enter'):
             self.type_text(MainPageLocators.HEADER_SEARCH_INPUT, keyword)
             self.driver.find_element(*MainPageLocators.HEADER_SEARCH_INPUT).send_keys(Keys.ENTER)
 
     def check_product_exist(self, keyword):
-        with allure.step('Check if product exist'):
+        with allure.step('Провверить результат поиска'):
             search_result = self.get_text(MainPageLocators.SEARCH_RESULT)
             assert keyword.lower() in search_result.lower(), \
                 f"Ожидаемый ключ '{keyword}' не найден в результате: '{search_result}'"
 
     def get_title_cards(self):
-        with allure.step('get_title_cards'):
+        with allure.step('Получить название карточек товаров'):
             self.find_elements(ProductCardLocators.PRODUCT_TITLE)
             return self.find_elements(ProductCardLocators.PRODUCT_TITLE)
 
     def select_random_product(self):
-        with allure.step('Select random product'):
+        with allure.step('Выбрать случайный товар'):
             cards = self.get_title_cards()
             assert len(cards) > 0, "Товары не найдены"
             select_product = random.choice(cards)
@@ -55,15 +55,15 @@ class MainPage(BasePage):
             return product_name
 
     def open_mini_cart(self):
-        with allure.step('Open mini cart'):
+        with allure.step('Открыть всплывающую мини-корзину'):
             self.hover(MainPageLocators.CART_ICON)
 
     def open_cart(self):
-        with allure.step('Open cart'):
+        with allure.step('Открыть корзину'):
             self.click(MainPageLocators.CART_ICON)
 
     def get_footer_section_titles(self):
-        with allure.step('Get footer section titles'):
+        with allure.step('Посмотреть зоголовки футера'):
             elements = self.find_elements(MainPageLocators.FOOTER_TITLE)
             return {el.text.strip() for el in elements if el.text.strip()}
 
