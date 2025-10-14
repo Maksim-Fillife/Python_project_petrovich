@@ -34,11 +34,9 @@ class MainPage(BasePage):
             self.type_text(MainPageLocators.HEADER_SEARCH_INPUT, keyword)
             self.driver.find_element(*MainPageLocators.HEADER_SEARCH_INPUT).send_keys(Keys.ENTER)
 
-    def check_product_exist(self, keyword):
-        with allure.step('Провверить результат поиска'):
-            search_result = self.get_text(MainPageLocators.SEARCH_RESULT)
-            assert keyword.lower() in search_result.lower(), \
-                f"Ожидаемый ключ '{keyword}' не найден в результате: '{search_result}'"
+    def get_search_result_text(self, keyword):
+        with allure.step('Получить текст результата поиска'):
+            return self.get_text(MainPageLocators.SEARCH_RESULT)
 
     def get_title_cards(self):
         with allure.step('Получить название карточек товаров'):
