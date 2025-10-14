@@ -16,13 +16,7 @@ class MainPage(BasePage):
 
     def open_login_modal(self, max_retries=3):
         with allure.step('Открыть форму авторизаации'):
-            for i in range(max_retries):
-                try:
-                    self.click(MainPageLocators.LOGIN_BUTTON)
-                    break
-                except exceptions.TimeoutException:
-                    if i == max_retries - 1:
-                        raise
+            self.click(MainPageLocators.LOGIN_BUTTON)
 
 
     def open_services(self):
