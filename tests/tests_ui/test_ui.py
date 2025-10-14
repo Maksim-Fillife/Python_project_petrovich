@@ -5,36 +5,43 @@ import allure
 @allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Successful user login')
-@allure.story('Authentication')
+@allure.story('Авторизация')
+@allure.feature('Успешный вход пользователя')
+@allure.title('Успешная авторизация пользователя с корректными данными')
 def test_login_success(main_page, login_page):
     main_page.open()
     main_page.open_login_modal()
     login_page.fill_email()
     login_page.fill_password()
     login_page.submit_authorization()
-    login_page.check_successful_auth()
+    assert login_page.is_profile_popup_displayed(), "Профиль не отобразился"
 
 
 @allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Login with invalid password')
-@allure.story('Authentication')
+@allure.story('Авторизация')
+@allure.feature('Вход с неверным паролем')
+@allure.title('Попытка входа с некорректным паролем')
 def test_login_with_wrong_password(main_page, login_page):
     main_page.open()
     main_page.open_login_modal()
     login_page.fill_email()
     login_page.fill_invalid_password()
     login_page.submit_authorization()
-    login_page.check_unsuccessful_auth()
+    with allure.step("Проверить сообщение об ошибке при неверном пароле"):
+        error_message = login_page.get_error_password_message()
+        assert error_message ==  "Неверный пароль", \
+            f"Ожидалось 'Неверный пароль', получено: '{error_message}'"
+
 
 
 @allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('User logout')
-@allure.story('Authentication')
+@allure.story('Авторизация')
+@allure.feature('Выход из аккаунта')
+@allure.title('Выход пользователя из аккаунта')
 def test_logout(main_page, login_page):
     main_page.open()
     main_page.open_login_modal()
@@ -43,26 +50,34 @@ def test_logout(main_page, login_page):
     login_page.submit_authorization()
     login_page.open_profile_popup()
     login_page.click_logout()
-    login_page.check_logout()
+    with allure.step("Проверить отображение элемента авторизации после выхода из аккаунта"):
+        login_prompt = login_page.get_login_prompt_text()
+        assert login_prompt == "Войдите, чтобы продолжить", \
+            f"Ожидалось 'Войдите, чтобы продолжить', получено: '{login_prompt}'"
 
 
 @allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Search product by keyword')
-@allure.story('Product Search')
+@allure.story('Поиск товаров')
+@allure.feature('Поиск по ключевому слову')
+@allure.title('Поиск товара по ключевому слову {keyword}')
 def test_search_product_by_keyword(main_page, product_page):
     main_page.open()
     keyword='перфоратор'
     main_page.search_product(keyword)
-    main_page.check_product_exist(keyword)
+    with allure.step(f"Проверить, что результат поиска содержит ключевое слово '{keyword}'"):
+        search_result = main_page.get_search_result_text(keyword)
+        assert keyword.lower() in search_result.lower(), \
+            f"Ожидаемый ключ '{keyword}' не найден в результате: '{search_result}'"
 
 
 @allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Open product detail page')
-@allure.story('Product Catalog')
+@allure.story('Каталог товаров')
+@allure.feature('Открытие карточки товара')
+@allure.title('Открытие случайной карточки товара и проверка названия')
 def test_open_product_card(main_page, product_page):
     main_page.open()
     main_page.search_product('краска')
@@ -77,35 +92,43 @@ def test_open_product_card(main_page, product_page):
 @allure.tag('Web')
 @allure.severity(Severity.MINOR)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Add product to favorites')
-@allure.story('Wishlist')
+@allure.story('Избранное')
+@allure.feature('Добавление товара в избранное')
+@allure.title('Добавление товара в список избранного')
 def test_add_product_to_favorites(main_page, product_page):
     main_page.open()
     main_page.search_product('Водоснабжение')
     main_page.select_random_product()
     main_page.get_title_cards()
     product_page.add_to_favourite()
-    product_page.check_added_to_favorite()
+    with allure.step("Проверить, что появилось сообщение 'Добавлено в избранное'"):
+        message = product_page.get_favorite_added_message()
+        assert message == 'Добавлено в избранное'
 
 
 @allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Add product to cart')
-@allure.story('Shopping Cart')
+@allure.story('Корзина')
+@allure.feature('Добавление товара в корзину')
+@allure.title('Добавление товара в корзину покупок')
 def test_add_product_to_cart(main_page, product_page):
     main_page.open()
     main_page.search_product('розетка')
     main_page.select_random_product()
     product_page.add_to_cart()
-    product_page.check_added_to_cart()
+    with allure.step("Проверить, что кнопка изменила текст на 'В корзине'"):
+        button_text = product_page.get_add_to_cart_button_text()
+        assert button_text == "В корзине", \
+            f"Ожидался текст кнопки 'В корзине', получено: '{button_text}'"
 
 
 @allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Remove product from cart')
-@allure.story('Shopping Cart')
+@allure.story('Корзина')
+@allure.feature('Удаление товара из корзины')
+@allure.title('Удаления товара из корзины и очистка содержимого')
 def test_delete_product_from_cart(main_page, product_page, cart_page):
     main_page.open()
     main_page.search_product('крепеж')
@@ -113,26 +136,32 @@ def test_delete_product_from_cart(main_page, product_page, cart_page):
     product_page.add_to_cart()
     main_page.open_cart()
     cart_page.delete_product_from_cart()
-    cart_page.is_cart_empty()
+    with allure.step("Проверить, что появилось сообщение 'Корзина пуста'"):
+        assert cart_page.is_cart_empty(), "Сообщение 'Корзина пуста.' не отобразилось"
 
 
 @allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Open Delivery page')
-@allure.story('Services')
+@allure.story('Сервисы')
+@allure.feature('Открытие страницы доставки')
+@allure.title('Переход на страницу "Доставка и подъём"')
 def test_open_delivery_page(main_page,services_page, delivery_page):
     main_page.open()
     main_page.open_services()
     services_page.open_delivery_page()
-    delivery_page.check_delivery_page_title()
+    with allure.step("Проверить, что заголовок страницы содержит 'Доставка и подъем'"):
+        title_text = delivery_page.get_delivery_page_title()
+        assert "Доставка и подъем" in title_text, \
+            f"Ожидалось, что заголовок содержит 'Доставка и подъем', но получено: '{title_text}'"
 
 
 @allure.tag('Web')
 @allure.severity(Severity.MINOR)
 @allure.label('owner', 'Maksim-Fillife')
-@allure.feature('Verify footer section titles')
-@allure.story('Site Navigation')
+@allure.story('Навигация по сайту')
+@allure.feature('Проверка разделов футера')
+@allure.title('Проверка наличия разделов в футере сайта')
 def test_footer_contains_company_info(main_page):
     expected = {
         "О компании",
