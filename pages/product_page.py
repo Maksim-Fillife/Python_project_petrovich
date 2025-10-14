@@ -17,13 +17,7 @@ class ProductPage(BasePage):
 
     def add_to_cart(self, max_retries=3):
         with allure.step('Добавить товар в корзину'):
-            for i in range(max_retries):
-                try:
-                    self.click(ProductCardLocators.ADD_TO_CART_BUTTON)
-                    break
-                except StaleElementReferenceException:
-                    if i == max_retries - 1:
-                        raise
+            self.click(ProductCardLocators.ADD_TO_CART_BUTTON)
 
     def get_add_to_cart_button_text(self):
         with allure.step('Проверить текст кнопки'):
