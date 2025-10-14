@@ -38,13 +38,11 @@ class LoginPage(BasePage):
         with allure.step('Нажать кнопку "Выход"'):
             self.click(LoginPageLocators.LOGOUT_BUTTON)
 
-    def check_logout(self):
+    def get_login_prompt_text(self):
         with allure.step('Проверить успешный выход из профиля'):
             self.click(MainPageLocators.LOGIN_BUTTON)
-            login_prompt = self.get_text(LoginPageLocators.LOGIN_PROMPT)
-            assert login_prompt == "Войдите, чтобы продолжить", "Текст не соответствет"
+            return self.get_text(LoginPageLocators.LOGIN_PROMPT)
 
-    def check_unsuccessful_auth(self):
-        with allure.step('Проверить ошибку авторизации'):
-            error_password_message = self.get_text(LoginPageLocators.ERROR_PASSWORD_MESSAGE)
-            assert error_password_message == "Неверный пароль", "Текст не соответствует"
+    def get_error_password_message(self):
+        with allure.step('Получить сообщение об ошибке "Неверный пароль"'):
+            return self.get_text(LoginPageLocators.ERROR_PASSWORD_MESSAGE)
