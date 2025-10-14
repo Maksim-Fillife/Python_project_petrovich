@@ -6,8 +6,6 @@ import allure
 
 class DeliveryPage(BasePage):
 
-    def check_delivery_page_title(self):
+    def get_delivery_page_title(self):
         with allure.step('Проверить заголовок страницы доставки'):
-            title_text = self.get_text(DeliveryPageLocators.DELIVERY_PAGE_TITLE)
-            assert "Доставка и подъем" in title_text, \
-                "Ожидался текст 'Доставка и подъем'"
+            return self.get_text(DeliveryPageLocators.DELIVERY_PAGE_TITLE)
