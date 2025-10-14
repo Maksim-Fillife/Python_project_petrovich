@@ -11,4 +11,4 @@ class CartPage(MainPage):
 
     def is_cart_empty(self):
         with allure.step('Проверить корзину на отсутствие товаров'):
-            self.wait_for_text_in_element(CartPageLocators.EMPTY_CART_MESSAGE, 'Корзина пуста.')
+            return  self.wait_for_text_in_element(CartPageLocators.EMPTY_CART_MESSAGE, 'Корзина пуста.')
