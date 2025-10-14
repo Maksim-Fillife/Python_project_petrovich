@@ -30,8 +30,7 @@ class ProductPage(BasePage):
             assert self.wait_for_text_in_element(ProductCardLocators.ADD_TO_CART_BUTTON, 'В корзине'), \
                 "Текст кнопки не изменился на 'в корзине' после добавления"
 
-    def check_added_to_favorite(self):
+    def get_favorite_added_message(self):
         with allure.step('Проверка добавления товара в избранное'):
-            assert self.is_element_visible(ProductCardLocators.FAVORITE_ADDED_MESSAGE)
-            check_text = self.get_text(ProductCardLocators.FAVORITE_ADDED_MESSAGE)
-            assert check_text == 'Добавлено в избранное'
+            self.is_element_visible(ProductCardLocators.FAVORITE_ADDED_MESSAGE)
+            return self.get_text(ProductCardLocators.FAVORITE_ADDED_MESSAGE)
