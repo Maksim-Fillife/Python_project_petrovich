@@ -5,11 +5,19 @@ import pytest
 import json
 from utils.api_rquests import ProductService, CartService, FavoriteService, AuthService
 from data.config import PASSWORD, EMAIL, INVALID_PASSWORD
+import allure
+from allure_commons.types import Severity
 
 SCHEMA_DIR = Path(__file__).parent.parent.parent / "schemas"
 
 
 @pytest.mark.parametrize("product_code", load_all_product_code())
+@allure.tag("Api")
+@allure.severity(Severity.NORMAL)
+@allure.label('owner', 'Maksim-Fillife')
+@allure.feature("Каталог товаров")
+@allure.story("Получение товара по артикулу")
+@allure.title("Получение товара по коду: {product_code}")
 def test_get_product_by_code(api_client, product_code):
     product_service = ProductService(api_client)
     response = product_service.get_product_by_code(product_code)
@@ -27,6 +35,12 @@ def test_get_product_by_code(api_client, product_code):
 
 
 
+@allure.tag("Api")
+@allure.severity(Severity.CRITICAL)
+@allure.label('owner', 'Maksim-Fillife')
+@allure.feature("Корзина")
+@allure.story("Добавление товара в корзину")
+@allure.title("Успешное добавление товара в корзину")
 def test_add_product_to_cart(api_client, product_guid):
     cart_service = CartService(api_client)
     response = cart_service.add_product_to_cart(product_guid, qty=1)
@@ -39,6 +53,12 @@ def test_add_product_to_cart(api_client, product_guid):
 
 
 
+@allure.tag("Api")
+@allure.severity(Severity.CRITICAL)
+@allure.label('owner', 'Maksim-Fillife')
+@allure.feature("Корзина")
+@allure.story("Удаление товара из корзины")
+@allure.title("Удаление товара из корзины")
 def test_delete_product_from_cart(api_client, product_guid):
     cart_service = CartService(api_client)
     cart_service.add_product_to_cart(product_guid, qty=1)
@@ -50,6 +70,12 @@ def test_delete_product_from_cart(api_client, product_guid):
 
 
 
+@allure.tag("Api")
+@allure.severity(Severity.NORMAL)
+@allure.label('owner', 'Maksim-Fillife')
+@allure.feature("Корзина")
+@allure.story("Изменение количества товара")
+@allure.title("Изменение количества товара в корзине")
 def test_change_count_product_in_cart(api_client, product_guid):
     cart_service = CartService(api_client)
 
@@ -64,6 +90,12 @@ def test_change_count_product_in_cart(api_client, product_guid):
 
 
 
+@allure.tag("Api")
+@allure.severity(Severity.NORMAL)
+@allure.label('owner', 'Maksim-Fillife')
+@allure.feature("Избранное")
+@allure.story("Добавление товара в избранное")
+@allure.title("Добавление товара в избранное по артикулу")
 def test_add_product_to_favorite(api_client, product_code):
     favorite_service = FavoriteService(api_client)
 
@@ -74,6 +106,12 @@ def test_add_product_to_favorite(api_client, product_code):
 
 
 
+@allure.tag("Api")
+@allure.severity(Severity.CRITICAL)
+@allure.label('owner', 'Maksim-Fillife')
+@allure.feature("Авторизация")
+@allure.story("Успешный вход в аккаунт")
+@allure.title("Успешная авторизация с корректными данными")
 def test_auth_success(api_client):
     auth_service = AuthService(api_client)
 
@@ -83,6 +121,12 @@ def test_auth_success(api_client):
 
 
 
+@allure.tag("Api")
+@allure.severity(Severity.NORMAL)
+@allure.label('owner', 'Maksim-Fillife')
+@allure.feature("Авторизация")
+@allure.story("Неверный пароль")
+@allure.title("Авторизация с неверным паролем")
 def test_authorization_with_invalid_password(api_client):
     auth_service = AuthService(api_client)
 
