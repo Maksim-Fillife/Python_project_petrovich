@@ -9,42 +9,40 @@ import allure
 class LoginPage(BasePage):
 
     def fill_email(self):
-        with allure.step('Fill email'):
+        with allure.step('Ввести email'):
             self.type_text(LoginPageLocators.EMAIL_INPUT, EMAIL)
 
     def fill_password(self):
-        with allure.step('Fill password'):
+        with allure.step('Ввести пароль'):
             self.type_text(LoginPageLocators.PASSWORD_INPUT, PASSWORD)
 
     def fill_invalid_password(self):
-        with allure.step('Fill invalid password'):
+        with allure.step('Ввести неправильный пароль'):
             self.type_text(LoginPageLocators.PASSWORD_INPUT, INVALID_PASSWORD)
 
     def submit_authorization(self):
-        with allure.step('Submit authorization'):
+        with allure.step('Нажать кнопку "Войти"'):
             self.click(LoginPageLocators.ENTER_BUTTON)
 
-    def check_successful_auth(self):
-        with allure.step('Check successful auth'):
+    def is_profile_popup_displayed(self):
+        with allure.step('Проверить успешность авторизации'):
             self.hover(LoginPageLocators.PROFILE_BUTTON)
             profile_popup = self.find_element(LoginPageLocators.PROFILE_POPUP)
-            assert profile_popup.is_displayed(), "Профиль не отобразился"
+            return profile_popup.is_displayed()
 
     def open_profile_popup(self):
-        with allure.step('Open profile popup'):
+        with allure.step('Открыть попап профиля'):
             self.hover(LoginPageLocators.PROFILE_BUTTON)
 
     def click_logout(self):
-        with allure.step('Click logout'):
+        with allure.step('Нажать кнопку "Выход"'):
             self.click(LoginPageLocators.LOGOUT_BUTTON)
 
-    def check_logout(self):
-        with allure.step('Check logout'):
+    def get_login_prompt_text(self):
+        with allure.step('Проверить успешный выход из профиля'):
             self.click(MainPageLocators.LOGIN_BUTTON)
-            login_prompt = self.get_text(LoginPageLocators.LOGIN_PROMPT)
-            assert login_prompt == "Войдите, чтобы продолжить", "Текст не соответствет"
+            return self.get_text(LoginPageLocators.LOGIN_PROMPT)
 
-    def check_unsuccessful_auth(self):
-        with allure.step('Check unsuccessful auth'):
-            error_password_message = self.get_text(LoginPageLocators.ERROR_PASSWORD_MESSAGE)
-            assert error_password_message == "Неверный пароль", "Текст не соответствует"
+    def get_error_password_message(self):
+        with allure.step('Получить сообщение об ошибке "Неверный пароль"'):
+            return self.get_text(LoginPageLocators.ERROR_PASSWORD_MESSAGE)
