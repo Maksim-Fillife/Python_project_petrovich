@@ -5,7 +5,7 @@ import pytest
 from utils.data_loader import load_random_product_code
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def api_client():
 
     session = requests.Session()
