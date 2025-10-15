@@ -1,5 +1,6 @@
 from allure_commons.types import Severity
 import allure
+import pytest
 
 
 @allure.tag('Web')
@@ -8,6 +9,7 @@ import allure
 @allure.story('Авторизация')
 @allure.feature('Успешный вход пользователя')
 @allure.title('Успешная авторизация пользователя с корректными данными')
+@pytest.mark.ui
 def test_login_success(main_page, login_page):
     main_page.open()
     main_page.open_login_modal()
@@ -23,6 +25,7 @@ def test_login_success(main_page, login_page):
 @allure.story('Авторизация')
 @allure.feature('Вход с неверным паролем')
 @allure.title('Попытка входа с некорректным паролем')
+@pytest.mark.ui
 def test_login_with_wrong_password(main_page, login_page):
     main_page.open()
     main_page.open_login_modal()
@@ -42,6 +45,7 @@ def test_login_with_wrong_password(main_page, login_page):
 @allure.story('Авторизация')
 @allure.feature('Выход из аккаунта')
 @allure.title('Выход пользователя из аккаунта')
+@pytest.mark.ui
 def test_logout(main_page, login_page):
     main_page.open()
     main_page.open_login_modal()
@@ -62,6 +66,7 @@ def test_logout(main_page, login_page):
 @allure.story('Поиск товаров')
 @allure.feature('Поиск по ключевому слову')
 @allure.title('Поиск товара по ключевому слову {keyword}')
+@pytest.mark.ui
 def test_search_product_by_keyword(main_page, product_page):
     main_page.open()
     keyword='перфоратор'
@@ -78,6 +83,7 @@ def test_search_product_by_keyword(main_page, product_page):
 @allure.story('Каталог товаров')
 @allure.feature('Открытие карточки товара')
 @allure.title('Открытие случайной карточки товара и проверка названия')
+@pytest.mark.ui
 def test_open_product_card(main_page, product_page):
     main_page.open()
     main_page.search_product('краска')
@@ -95,6 +101,7 @@ def test_open_product_card(main_page, product_page):
 @allure.story('Избранное')
 @allure.feature('Добавление товара в избранное')
 @allure.title('Добавление товара в список избранного')
+@pytest.mark.ui
 def test_add_product_to_favorites(main_page, product_page):
     main_page.open()
     main_page.search_product('Водоснабжение')
@@ -112,6 +119,7 @@ def test_add_product_to_favorites(main_page, product_page):
 @allure.story('Корзина')
 @allure.feature('Добавление товара в корзину')
 @allure.title('Добавление товара в корзину покупок')
+@pytest.mark.ui
 def test_add_product_to_cart(main_page, product_page):
     main_page.open()
     main_page.search_product('розетка')
@@ -129,6 +137,7 @@ def test_add_product_to_cart(main_page, product_page):
 @allure.story('Корзина')
 @allure.feature('Удаление товара из корзины')
 @allure.title('Удаления товара из корзины и очистка содержимого')
+@pytest.mark.ui
 def test_delete_product_from_cart(main_page, product_page, cart_page):
     main_page.open()
     main_page.search_product('крепеж')
@@ -146,6 +155,7 @@ def test_delete_product_from_cart(main_page, product_page, cart_page):
 @allure.story('Сервисы')
 @allure.feature('Открытие страницы доставки')
 @allure.title('Переход на страницу "Доставка и подъём"')
+@pytest.mark.ui
 def test_open_delivery_page(main_page,services_page, delivery_page):
     main_page.open()
     main_page.open_services()
@@ -162,6 +172,7 @@ def test_open_delivery_page(main_page,services_page, delivery_page):
 @allure.story('Навигация по сайту')
 @allure.feature('Проверка разделов футера')
 @allure.title('Проверка наличия разделов в футере сайта')
+@pytest.mark.ui
 def test_footer_contains_company_info(main_page):
     expected = {
         "О компании",
