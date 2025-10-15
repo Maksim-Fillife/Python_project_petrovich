@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'TEST_TYPE',
+            choices: ['api', 'ui', 'all'],
+            description: 'Выберите тип тестов для запуска'
+        )
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -28,14 +36,30 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'petrovich_cred',
-                        usernameVariable: 'EMAIL',
-                        passwordVariable: 'PASSWORD'
-                    )
-                ]) {
-                    sh '. venv/bin/activate && python -m pytest --alluredir=allure-results'
+                script {
+                    def pytest_cmd = "python -m pytest --alluredir=allure-results"
+
+                    // Формируем маркер в зависимости от выбора
+                    def marker = params.TEST_TYPE == 'api' ? 'api' :
+                                 params.TEST_TYPE == 'ui'  ? 'ui'  : ''
+
+                    if (marker) {
+                        pytest_cmd += " -m ${marker}"
+                    }
+
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'petrovich_cred',
+                            usernameVariable: 'EMAIL',
+                            passwordVariable: 'PASSWORD'
+                        ),
+                        string(
+                            credentialsId: 'petrovich_cookies',
+                            variable: 'COOKIES'
+                        )
+                    ]) {
+                        sh ". venv/bin/activate && ${pytest_cmd}"
+                    }
                 }
             }
         }
