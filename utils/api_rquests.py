@@ -68,7 +68,7 @@ class FavoriteService:
     def add_to_favorite(self, product_code):
         response = self.client.post(
             "/catalog/v5/favorites/products?city_code=spb",
-            json={"code": product_code}
+            json={"code": int(product_code)}
         )
         return response
 

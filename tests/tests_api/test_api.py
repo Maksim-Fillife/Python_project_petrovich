@@ -12,7 +12,6 @@ SCHEMA_DIR = Path(__file__).parent.parent.parent / "schemas"
 
 
 @pytest.mark.parametrize("product_code", load_all_product_code())
-@allure.tag("Api")
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.feature("Каталог товаров")
@@ -36,7 +35,6 @@ def test_get_product_by_code(api_client, product_code):
 
 
 
-@allure.tag("Api")
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.feature("Корзина")
@@ -55,7 +53,6 @@ def test_add_product_to_cart(api_client, product_guid):
 
 
 
-@allure.tag("Api")
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.feature("Корзина")
@@ -73,7 +70,6 @@ def test_delete_product_from_cart(api_client, product_guid):
 
 
 
-@allure.tag("Api")
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.feature("Корзина")
@@ -94,7 +90,6 @@ def test_change_count_product_in_cart(api_client, product_guid):
 
 
 
-@allure.tag("Api")
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.feature("Избранное")
@@ -111,7 +106,6 @@ def test_add_product_to_favorite(api_client, product_code):
 
 
 
-@allure.tag("Api")
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.feature("Авторизация")
@@ -127,7 +121,6 @@ def test_auth_success(api_client):
 
 
 
-@allure.tag("Api")
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.feature("Авторизация")
