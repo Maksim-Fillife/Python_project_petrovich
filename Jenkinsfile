@@ -39,7 +39,6 @@ pipeline {
                 script {
                     def pytest_cmd = "python -m pytest --alluredir=allure-results"
 
-                    // Формируем маркер в зависимости от выбора
                     def marker = params.TEST_TYPE == 'api' ? 'api' :
                                  params.TEST_TYPE == 'ui'  ? 'ui'  : ''
 
