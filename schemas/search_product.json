@@ -31,7 +31,7 @@
               "type": ["array", "null"],
               "items": { "type": "string" }
             },
-            "panoramas": { "type": ["null"] },
+            "panoramas": { "type": "null" },
             "title": { "type": "string" },
             "section": { "$ref": "#/$defs/section" },
             "cover_image": { "type": "string" },
@@ -60,8 +60,7 @@
               "items": {}
             },
             "special_terms": {
-              "type": ["object", "null", "array"],
-              "items": { "type": "string" }
+              "type": ["object", "null", "array"]
             },
             "unit_title": { "type": "string" },
             "unit_title_alt": { "type": ["string", "null"] },
@@ -246,7 +245,7 @@
               }
             },
             "certificates": {
-              "type": "array",
+              "type": ["array", "null"],
               "items": {
                 "type": "object",
                 "required": ["type", "files"],
