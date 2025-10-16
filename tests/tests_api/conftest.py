@@ -42,7 +42,8 @@ def cleanup_favorites(api_client):
     yield
     api_client.delete('/catalog/v5/favorites/products?city_code=spb')
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture
 def logout_after_tests(api_client):
+    yield
     api_client.post('/user/v1.1/logout?city_code=spb')
 

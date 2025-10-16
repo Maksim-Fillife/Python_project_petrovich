@@ -112,7 +112,7 @@ def test_add_product_to_favorite(api_client, product_code):
 @allure.story("Успешный вход в аккаунт")
 @allure.title("Успешная авторизация с корректными данными")
 @pytest.mark.api
-def test_auth_success(api_client):
+def test_auth_success(api_client, logout_after_tests):
     auth_service = AuthService(api_client)
 
     response = auth_service.login(email=EMAIL, password=PASSWORD)
@@ -133,7 +133,7 @@ def test_authorization_with_invalid_password(api_client):
     response = auth_service.login(email=EMAIL, password=INVALID_PASSWORD)
 
     print("Status code:", response.status_code)
-    print("Response body:", response.text)  # ← это важно!
+    print("Response body:", response.text)
 
     assert response.status_code == 400
     assert response.json()['errors'][0]['title'] == 'Неверный пароль'
