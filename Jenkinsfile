@@ -9,6 +9,10 @@ pipeline {
         )
     }
 
+    environment {
+        ALLURE_RESULTS_DIR = "${params.TEST_TYPE == 'all' ? 'allure-results/all' : "allure-results/${params.TEST_TYPE}"}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -26,9 +30,10 @@ pipeline {
         stage('Prepare Allure History') {
             steps {
                 script {
-                    sh 'mkdir -p allure-results'
-                    if (fileExists('allure-report/history')) {
-                        sh 'cp -r allure-report/history allure-results/'
+                    sh "mkdir -p ${env.ALLURE_RESULTS_DIR}"
+                    def historyPath = "allure-report-${params.TEST_TYPE}/history"
+                    if (fileExists(historyPath)) {
+                        sh "cp -r ${historyPath} ${env.ALLURE_RESULTS_DIR}/"
                     }
                 }
             }
@@ -37,7 +42,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def pytest_cmd = "python -m pytest --alluredir=allure-results"
+                    def pytest_cmd = "python -m pytest --alluredir=${env.ALLURE_RESULTS_DIR}"
 
                     def marker = params.TEST_TYPE == 'api' ? 'api' :
                                  params.TEST_TYPE == 'ui'  ? 'ui'  : ''
@@ -66,12 +71,15 @@ pipeline {
 
     post {
         always {
-            allure(
-                includeProperties: false,
-                jdk: '',
-                results: [[path: 'allure-results']],
-                report: 'allure'
-            )
+            script {
+                def reportName = "allure-report-${params.TEST_TYPE}"
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    results: [[path: env.ALLURE_RESULTS_DIR]],
+                    report: reportName
+                ])
+            }
         }
     }
 }
