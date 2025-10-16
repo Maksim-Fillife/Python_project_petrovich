@@ -64,7 +64,7 @@ def test_delete_product_from_cart(api_client, product_guid):
     cart_service.add_product_to_cart(product_guid, qty=1)
 
     response = cart_service.remove_product_from_cart(product_guid)
-    assert response.status_code == 201
+    assert response.status_code == 200
     items_in_cart = cart_service.get_cart_items(product_guid)
     assert not items_in_cart
 
@@ -136,4 +136,4 @@ def test_authorization_with_invalid_password(api_client):
     print("Response body:", response.text)
 
     assert response.status_code == 400
-    assert response.json()['errors'][0]['title'] == 'Неверный парол'
+    assert response.json()['errors'][0]['title'] == 'Неверный пароль'
