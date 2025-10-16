@@ -131,5 +131,9 @@ def test_authorization_with_invalid_password(api_client):
     auth_service = AuthService(api_client)
 
     response = auth_service.login(email=EMAIL, password=INVALID_PASSWORD)
+
+    print("Status code:", response.status_code)
+    print("Response body:", response.text)  # ← это важно!
+
     assert response.status_code == 400
     assert response.json()['errors'][0]['title'] == 'Неверный пароль'
