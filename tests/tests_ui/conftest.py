@@ -57,7 +57,7 @@ def services_page(driver):
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_report(item, call):
+def pytest_runtest_makereport(item, call):
     outcome = yield
     rep = outcome.get_result()
     setattr(item, "rep_" + rep.when, rep)
