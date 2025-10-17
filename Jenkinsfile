@@ -93,7 +93,8 @@ pipeline {
                     message += "Статус: FAILED ❌"
                 }
 
-                message += "\n\n📊 [Отчёт Allure](${env.BUILD_URL}allure)"
+                def reportUrl = env.BUILD_URL + "allure"
+                message += "\n\n📊 [Отчёт Allure](${reportUrl})"
 
                 withCredentials([string(credentialsId: 'telegram_bot_token', variable: 'TELEGRAM_TOKEN')]) {
                     sh """
