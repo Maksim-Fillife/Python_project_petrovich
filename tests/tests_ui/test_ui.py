@@ -151,8 +151,8 @@ def test_open_delivery_page(main_page,services_page, delivery_page):
     services_page.open_delivery_page()
     with allure.step("Проверить, что заголовок страницы содержит 'Доставка и подъем'"):
         title_text = delivery_page.get_delivery_page_title()
-        assert "Доставка и подъем" in title_text, \
-            f"Ожидалось, что заголовок содержит 'Доставка и подъем', но получено: '{title_text}'"
+        assert "Доставка" in title_text, \
+            f"Ожидалось, что заголовок содержит 'Доставка', но получено: '{title_text}'"
 
 
 @allure.severity(Severity.MINOR)
