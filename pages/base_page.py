@@ -2,6 +2,7 @@ from selenium.common import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import ActionChains
+from locators.locators import CommonLocators
 
 
 
@@ -29,6 +30,9 @@ class BasePage:
         self.action.move_to_element(element).perform()
 
     def scroll_to_element(self, locator):
+        #Прокрутка к элементу
+        body = self.find_element(CommonLocators.BODY)
+        body.click()
         element = self.wait.until(EC.visibility_of_element_located(locator))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
 
