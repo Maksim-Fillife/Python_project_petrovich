@@ -1,4 +1,3 @@
-from selenium.common import StaleElementReferenceException
 from locators.locators import ProductCardLocators
 from pages.base_page import BasePage
 import allure
@@ -12,6 +11,7 @@ class ProductPage(BasePage):
 
     def add_to_favourite(self):
         with allure.step('Добавить товар в избранное'):
+            self.scroll_to_element(ProductCardLocators.ADD_TO_FAVORITE_BUTTON)
             element = self.find_element(ProductCardLocators.ADD_TO_FAVORITE_BUTTON)
             element.click()
 
