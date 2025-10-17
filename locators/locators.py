@@ -1,5 +1,8 @@
 from selenium.webdriver.common.by import By
 
+class CommonLocators:
+    BODY = (By.TAG_NAME, "body")
+
 class MainPageLocators:
     HEADER_SEARCH_INPUT = (By.CSS_SELECTOR, "input.header-search-input")
     SEARCH_RESULT = (By.XPATH, "//h1[contains(@class, 'pt-ta-left') and contains(@class, 'pt-wrap')]")
