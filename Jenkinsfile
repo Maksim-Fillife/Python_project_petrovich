@@ -93,15 +93,6 @@ pipeline {
                     message += "Статус: FAILED ❌"
                 }
 
-            def reportUrl = env.BUILD_URL?.trim()
-            if (!reportUrl.startsWith('http')) {
-                reportUrl = "https://" + reportUrl
-            }
-            reportUrl = reportUrl.endsWith('/') ? reportUrl : reportUrl + '/'
-            reportUrl += "allure"
-
-            message += "\n\n📊 [Отчёт Allure](${reportUrl})"
-
                 withCredentials([string(credentialsId: 'telegram_bot_token', variable: 'TELEGRAM_TOKEN')]) {
                     sh """
                         curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendMessage" \\
