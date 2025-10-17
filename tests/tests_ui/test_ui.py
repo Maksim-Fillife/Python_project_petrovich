@@ -3,7 +3,6 @@ import allure
 import pytest
 
 
-@allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Авторизация')
@@ -19,7 +18,6 @@ def test_login_success(main_page, login_page):
     assert login_page.is_profile_popup_displayed(), "Профиль не отобразился"
 
 
-@allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Авторизация')
@@ -39,7 +37,6 @@ def test_login_with_wrong_password(main_page, login_page):
 
 
 
-@allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Авторизация')
@@ -60,7 +57,6 @@ def test_logout(main_page, login_page):
             f"Ожидалось 'Войдите, чтобы продолжить', получено: '{login_prompt}'"
 
 
-@allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Поиск товаров')
@@ -77,7 +73,6 @@ def test_search_product_by_keyword(main_page, product_page):
             f"Ожидаемый ключ '{keyword}' не найден в результате: '{search_result}'"
 
 
-@allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Каталог товаров')
@@ -87,15 +82,12 @@ def test_search_product_by_keyword(main_page, product_page):
 def test_open_product_card(main_page, product_page):
     main_page.open()
     main_page.search_product('краска')
-    main_page.select_random_product()
-    main_page.get_title_cards()
     product_name = main_page.select_random_product()
     product_title = product_page.get_product_title()
     assert product_name.lower() in product_title.lower(), \
         f"Название товара не совпадает: ожидалось '{product_name}', получено '{product_title}'"
 
 
-@allure.tag('Web')
 @allure.severity(Severity.MINOR)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Избранное')
@@ -113,7 +105,6 @@ def test_add_product_to_favorites(main_page, product_page):
         assert message == 'Добавлено в избранное'
 
 
-@allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Корзина')
@@ -131,7 +122,6 @@ def test_add_product_to_cart(main_page, product_page):
             f"Ожидался текст кнопки 'В корзине', получено: '{button_text}'"
 
 
-@allure.tag('Web')
 @allure.severity(Severity.CRITICAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Корзина')
@@ -149,7 +139,6 @@ def test_delete_product_from_cart(main_page, product_page, cart_page):
         assert cart_page.is_cart_empty(), "Сообщение 'Корзина пуста.' не отобразилось"
 
 
-@allure.tag('Web')
 @allure.severity(Severity.NORMAL)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Сервисы')
@@ -166,7 +155,6 @@ def test_open_delivery_page(main_page,services_page, delivery_page):
             f"Ожидалось, что заголовок содержит 'Доставка и подъем', но получено: '{title_text}'"
 
 
-@allure.tag('Web')
 @allure.severity(Severity.MINOR)
 @allure.label('owner', 'Maksim-Fillife')
 @allure.story('Навигация по сайту')

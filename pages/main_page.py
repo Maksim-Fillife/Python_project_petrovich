@@ -1,4 +1,3 @@
-from selenium.common import exceptions
 from locators.locators import ProductCardLocators
 from locators.locators import MainPageLocators
 from pages.base_page import BasePage
@@ -43,7 +42,7 @@ class MainPage(BasePage):
             assert len(cards) > 0, "Товары не найдены"
             select_product = random.choice(cards)
             product_name = select_product.text
-            self.click(select_product)
+            select_product.click()
             return product_name
 
     def open_mini_cart(self):
