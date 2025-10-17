@@ -15,8 +15,8 @@ class CartService:
         return response
 
 
-    @allure.step("Получить все товары в корзине")
-    def get_cart_items(self, product_guid):
+    @allure.step("Получить добавленный товар в корзину")
+    def get_cart_item(self, product_guid):
         response = self.client.get("/cart/v2/items?city_code=spb")
 
         products = response.json()['data']['products']
@@ -24,6 +24,12 @@ class CartService:
             if product['product_guid'] == product_guid:
                 return product
         return None
+
+    @allure.step("Получить количество товаров в корзине")
+    def get_count_product_in_cart(self):
+        response = self.client.get("/cart/v2/items?city_code=spb")
+        count = response.json()['data']['totals']['items_count']
+        return count
 
 
     @allure.step("далить товар {product_guid} из корзины")
