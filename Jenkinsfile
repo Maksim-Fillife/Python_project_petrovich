@@ -11,7 +11,6 @@ pipeline {
 
     environment {
         ALLURE_RESULTS_DIR = "${params.TEST_TYPE == 'all' ? 'allure-results/all' : "allure-results/${params.TEST_TYPE}"}"
-        REPORT_IMAGE = "report_${params.TEST_TYPE}.png"
     }
 
     stages {
@@ -43,7 +42,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def pytest_cmd = "python -m pytest --alluredir=${env.ALLURE_RESULTS_DIR} -v"
+                    def pytest_cmd = "python -m pytest --alluredir=${env.ALLURE_RESULTS_DIR}"
 
                     def marker = params.TEST_TYPE == 'api' ? 'api' :
                                  params.TEST_TYPE == 'ui'  ? 'ui'  : ''
@@ -68,55 +67,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Generate Report Image') {
-            steps {
-                script {
-                    // Парсим результаты из allure-results
-                    def total = 0
-                    def passed = 0
-                    def failed = 0
-                    def skipped = 0
-
-                    // Простой способ: считаем файлы .json в allure-results
-                    def resultsDir = sh(script: "find ${env.ALLURE_RESULTS_DIR} -name '*.json' | wc -l", returnStdout: true).trim().toInteger()
-                    if (resultsDir > 0) {
-                        // Используем Python-скрипт для точного парсинга
-                        sh ". venv/bin/activate && python parse_allure_results.py --results-dir ${env.ALLURE_RESULTS_DIR} --output stats.json"
-                        def stats = readJSON file: 'stats.json'
-                        total = stats.total
-                        passed = stats.passed
-                        failed = stats.failed
-                        skipped = stats.skipped
-                    } else {
-                        // fallback
-                        total = 1
-                        passed = 1
-                    }
-
-                    // Сохраняем в env для использования в post
-                    env.TOTAL_TESTS = total.toString()
-                    env.PASSED_TESTS = passed.toString()
-                    env.FAILED_TESTS = failed.toString()
-                    env.SKIPPED_TESTS = skipped.toString()
-
-                    // Генерируем изображение
-                    def duration = currentBuild.durationString
-                    duration = duration.replace(' and counting', '').replace(' and', '').replace(' ms', '').trim()
-
-                    sh """
-                        . venv/bin/activate
-                        python generate_report_image.py \\
-                            --passed ${passed} \\
-                            --failed ${failed} \\
-                            --skipped ${skipped} \\
-                            --duration "${duration}" \\
-                            --test-type "${params.TEST_TYPE}" \\
-                            --output ${env.REPORT_IMAGE}
-                    """
-                }
-            }
-        }
     }
 
     post {
@@ -130,31 +80,31 @@ pipeline {
                     report: reportName
                 ])
 
+                def telegramToken = ''
                 def chatId = '731627096'
-                def reportUrl = "${env.BUILD_URL}allure"
+                def message = "✅ Тесты завершены!\nТип: ${params.TEST_TYPE}\n"
+
+
+                if (currentBuild.result == 'SUCCESS') {
+                    message += "Статус: PASSED ✅"
+                } else if (currentBuild.result == 'UNSTABLE') {
+                    message += "Статус: UNSTABLE ⚠️"
+                } else {
+                    message += "Статус: FAILED ❌"
+                }
+
+                message += "\n\n📊 [Отчёт Allure](${env.BUILD_URL}allure)"
 
                 withCredentials([string(credentialsId: 'telegram_bot_token', variable: 'TELEGRAM_TOKEN')]) {
-                    if (fileExists(env.REPORT_IMAGE)) {
-                        sh """
-                            curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendPhoto" \\
-                                 -F "chat_id=${chatId}" \\
-                                 -F "photo=@${env.REPORT_IMAGE}" \\
-                                 -F "caption=✅ Тесты завершены!\\nТип: ${params.TEST_TYPE}\\n\\n🔗 Отчёт: ${reportUrl}" \\
-                                 -F "parse_mode=Markdown"
-                        """
-                    } else {
-                        // fallback: текстовое сообщение
-                        def message = "✅ Тесты завершены!\\nТип: ${params.TEST_TYPE}\\n\\n❌ Не удалось сгенерировать изображение.\\n🔗 Отчёт: ${reportUrl}"
-                        sh """
-                            curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendMessage" \\
-                                 -H "Content-Type: application/json" \\
-                                 -d '{
-                                       "chat_id": "${chatId}",
-                                       "text": "${message}",
-                                       "parse_mode": "Markdown"
-                                     }'
-                        """
-                    }
+                    sh """
+                        curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendMessage" \\
+                             -H "Content-Type: application/json" \\
+                             -d '{
+                                   "chat_id": "${chatId}",
+                                   "text": "${message}",
+                                   "parse_mode": "Markdown"
+                                 }'
+                    """
                 }
             }
         }
