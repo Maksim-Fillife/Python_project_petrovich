@@ -11,6 +11,7 @@ pipeline {
 
     environment {
         ALLURE_RESULTS_DIR = "${params.TEST_TYPE == 'all' ? 'allure-results/all' : "allure-results/${params.TEST_TYPE}"}"
+        REPORT_IMAGE = "report_${params.TEST_TYPE}.png"
     }
 
     stages {
@@ -27,18 +28,6 @@ pipeline {
             }
         }
 
-        stage('Prepare Allure History') {
-            steps {
-                script {
-                    sh "mkdir -p ${env.ALLURE_RESULTS_DIR}"
-                    def historyPath = "allure-report-${params.TEST_TYPE}/history"
-                    if (fileExists(historyPath)) {
-                        sh "cp -r ${historyPath} ${env.ALLURE_RESULTS_DIR}/"
-                    }
-                }
-            }
-        }
-
         stage('Run Tests') {
             steps {
                 script {
@@ -51,6 +40,7 @@ pipeline {
                         pytest_cmd += " -m ${marker}"
                     }
 
+                    // Запуск с сохранением вывода для парсинга
                     withCredentials([
                         usernamePassword(
                             credentialsId: 'petrovich_cred',
@@ -62,8 +52,47 @@ pipeline {
                             variable: 'COOKIES'
                         )
                     ]) {
-                        sh ". venv/bin/activate && ${pytest_cmd}"
+                        sh ". venv/bin/activate && ${pytest_cmd} --tb=short -v > pytest_output.txt || true"
                     }
+                }
+            }
+        }
+
+        stage('Parse Test Results') {
+            steps {
+                script {
+                    // Простой парсинг из вывода pytest
+                    def output = readFile('pytest_output.txt')
+                    def passed = (output =~ /(\d+) passed/).size() > 0 ? (output =~ /(\d+) passed/)[0][1].toInteger() : 0
+                    def failed = (output =~ /(\d+) failed/).size() > 0 ? (output =~ /(\d+) failed/)[0][1].toInteger() : 0
+                    def skipped = (output =~ /(\d+) skipped/).size() > 0 ? (output =~ /(\d+) skipped/)[0][1].toInteger() : 0
+
+                    env.PASSED = passed.toString()
+                    env.FAILED = failed.toString()
+                    env.SKIPPED = skipped.toString()
+                }
+            }
+        }
+
+        stage('Generate Report Image') {
+            steps {
+                script {
+                    def duration = currentBuild.durationString
+                    duration = duration.replace(' and counting', '')
+                                 .replace(' and', '')
+                                 .replace(' ms', '')
+                                 .trim()
+
+                    sh """
+                        . venv/bin/activate
+                        python generate_report_image.py \\
+                            --passed ${env.PASSED} \\
+                            --failed ${env.FAILED} \\
+                            --skipped ${env.SKIPPED} \\
+                            --duration "${duration}" \\
+                            --test-type "${params.TEST_TYPE}" \\
+                            --output ${env.REPORT_IMAGE}
+                    """
                 }
             }
         }
@@ -72,6 +101,7 @@ pipeline {
     post {
         always {
             script {
+                // Генерация Allure-отчёта
                 def reportName = "allure-report-${params.TEST_TYPE}"
                 allure([
                     includeProperties: false,
@@ -80,38 +110,31 @@ pipeline {
                     report: reportName
                 ])
 
-                def telegramToken = ''
+                // Отправка в Telegram
                 def chatId = '731627096'
-                def message = "✅ Тесты завершены!\nТип: ${params.TEST_TYPE}\n"
-
-
-                if (currentBuild.result == 'SUCCESS') {
-                    message += "Статус: PASSED ✅"
-                } else if (currentBuild.result == 'UNSTABLE') {
-                    message += "Статус: UNSTABLE ⚠️"
-                } else {
-                    message += "Статус: FAILED ❌"
-                }
-
-            def reportUrl = env.BUILD_URL?.trim()
-            if (!reportUrl.startsWith('http')) {
-                reportUrl = "https://" + reportUrl
-            }
-            reportUrl = reportUrl.endsWith('/') ? reportUrl : reportUrl + '/'
-            reportUrl += "allure"
-
-            message += "\n\n📊 [Отчёт Allure](${reportUrl})"
+                def reportUrl = "${env.BUILD_URL}allure"
 
                 withCredentials([string(credentialsId: 'telegram_bot_token', variable: 'TELEGRAM_TOKEN')]) {
-                    sh """
-                        curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendMessage" \\
-                             -H "Content-Type: application/json" \\
-                             -d '{
-                                   "chat_id": "${chatId}",
-                                   "text": "${message}",
-                                   "parse_mode": "Markdown"
-                                 }'
-                    """
+                    if (fileExists(env.REPORT_IMAGE)) {
+                        sh """
+                            curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendPhoto" \\
+                                 -F "chat_id=${chatId}" \\
+                                 -F "photo=@${env.REPORT_IMAGE}" \\
+                                 -F "caption=✅ Тесты завершены!\\nТип: ${params.TEST_TYPE}\\n\\n🔗 Отчёт: ${reportUrl}" \\
+                                 -F "parse_mode=Markdown"
+                        """
+                    } else {
+                        // fallback
+                        sh """
+                            curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendMessage" \\
+                                 -H "Content-Type: application/json" \\
+                                 -d '{
+                                       "chat_id": "${chatId}",
+                                       "text": "✅ Тесты завершены!\\nТип: ${params.TEST_TYPE}\\n\\n❌ Не удалось создать изображение.\\n🔗 Отчёт: ${reportUrl}",
+                                       "parse_mode": "Markdown"
+                                     }'
+                        """
+                    }
                 }
             }
         }
