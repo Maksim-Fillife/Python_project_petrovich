@@ -79,6 +79,31 @@ pipeline {
                     results: [[path: env.ALLURE_RESULTS_DIR]],
                     report: reportName
                 ])
+
+                def telegramToken = ''
+                def chatId = '731627096'
+                def message = "✅ Тесты завершены!\nТип: ${params.TEST_TYPE}\n"
+
+
+                if (currentBuild.result == 'SUCCESS') {
+                    message += "Статус: УСПЕХ ✅"
+                } else if (currentBuild.result == 'UNSTABLE') {
+                    message += "Статус: НЕСТАБИЛЬНО ⚠️"
+                } else {
+                    message += "Статус: ПРОВАЛ ❌"
+                }
+
+                withCredentials([string(credentialsId: 'telegram_bot_token', variable: 'TELEGRAM_TOKEN')]) {
+                    sh """
+                        curl -s -X POST "https://api.telegram.org/bot\${TELEGRAM_TOKEN}/sendMessage" \\
+                             -H "Content-Type: application/json" \\
+                             -d '{
+                                   "chat_id": "${chatId}",
+                                   "text": "${message}",
+                                   "parse_mode": "Markdown"
+                                 }'
+                    """
+                }
             }
         }
     }
