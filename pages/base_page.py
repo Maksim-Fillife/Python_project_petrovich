@@ -28,6 +28,10 @@ class BasePage:
         element = self.wait.until(EC.visibility_of_element_located(locator))
         self.action.move_to_element(element).perform()
 
+    def scroll_to_element(self, locator):
+        element = self.wait.until(EC.visibility_of_element_located(locator))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+
     def type_text(self, locator, text):
         #Ввод текста в поле
         element = self.wait.until(EC.element_to_be_clickable(locator))
