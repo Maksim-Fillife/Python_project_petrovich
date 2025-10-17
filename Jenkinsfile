@@ -93,8 +93,14 @@ pipeline {
                     message += "Статус: FAILED ❌"
                 }
 
-                def reportUrl = env.BUILD_URL + "allure"
-                message += "\n\n📊 [Отчёт Allure](${reportUrl})"
+            def reportUrl = env.BUILD_URL?.trim()
+            if (!reportUrl.startsWith('http')) {
+                reportUrl = "https://" + reportUrl
+            }
+            reportUrl = reportUrl.endsWith('/') ? reportUrl : reportUrl + '/'
+            reportUrl += "allure"
+
+            message += "\n\n📊 [Отчёт Allure](${reportUrl})"
 
                 withCredentials([string(credentialsId: 'telegram_bot_token', variable: 'TELEGRAM_TOKEN')]) {
                     sh """
