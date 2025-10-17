@@ -1,3 +1,5 @@
+from typing import Callable, Any
+
 from utils.data_loader import load_all_product_code
 from jsonschema import validate
 from pathlib import Path
@@ -48,7 +50,7 @@ def test_add_product_to_cart(api_client, product_guid):
     assert response.status_code == 200
 
     assert response.json()['state']['title'] == 'Запрос успешно выполнен'
-    check_item_in_cart = cart_service.get_cart_items(product_guid)
+    check_item_in_cart = cart_service.get_cart_item(product_guid)
     assert check_item_in_cart['product_guid'] == product_guid
 
 
@@ -65,8 +67,8 @@ def test_delete_product_from_cart(api_client, product_guid):
 
     response = cart_service.remove_product_from_cart(product_guid)
     assert response.status_code == 200
-    items_in_cart = cart_service.get_cart_items(product_guid)
-    assert not items_in_cart
+    item_in_cart = cart_service.get_cart_item(product_guid)
+    assert not item_in_cart
 
 
 
@@ -80,13 +82,15 @@ def test_change_count_product_in_cart(api_client, product_guid):
     cart_service = CartService(api_client)
 
     cart_service.add_product_to_cart(product_guid, qty=1)
+    in_cart = cart_service.get_count_product_in_cart()
+    assert in_cart > 0
 
     new_quantity = 30
     response = cart_service.update_product_quantity(product_guid, new_quantity)
 
     assert response.status_code == 200
-    cart_items = cart_service.get_cart_items(product_guid)
-    assert cart_items['qty'] == new_quantity
+    cart_item = cart_service.get_cart_item(product_guid)
+    assert cart_item['qty'] == new_quantity
 
 
 
