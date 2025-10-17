@@ -33,7 +33,7 @@ class LoginPage(BasePage):
     def open_profile_popup(self):
         with allure.step('Открыть попап профиля'):
             self.hover(LoginPageLocators.PROFILE_BUTTON)
-            self.find_element(MainPageLocators.LOGIN_BUTTON)
+            self.find_element(LoginPageLocators.LOGOUT_BUTTON)
 
     def click_logout(self):
         with allure.step('Нажать кнопку "Выход"'):
