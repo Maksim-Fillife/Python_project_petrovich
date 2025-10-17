@@ -26,13 +26,13 @@ class BasePage:
 
     def hover(self, locator):
         #Наведение курсора на элемент
+        body = self.find_element(CommonLocators.BODY)
+        body.click()
         element = self.wait.until(EC.visibility_of_element_located(locator))
         self.action.move_to_element(element).perform()
 
     def scroll_to_element(self, locator):
         #Прокрутка к элементу
-        body = self.find_element(CommonLocators.BODY)
-        body.click()
         element = self.wait.until(EC.visibility_of_element_located(locator))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
 
